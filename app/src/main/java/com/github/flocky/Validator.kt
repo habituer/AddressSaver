@@ -2,22 +2,24 @@ package com.github.flocky
 
 object Validator {
 
-    fun validateAccountNumber(accountNumber: AccountNumber): ValidationResult {
+    fun validateAccountNumber(postalCode: PostalCode): ValidationResult {
         return ValidationResult(
-            accountNumber.value.isNotEmpty() &&
-                accountNumber.value.length == accountNumber.length
+            postalCode.value.isNotEmpty() &&
+                postalCode.value.length == postalCode.length,
         )
     }
 
-    fun validatePAN(pan: PANNumber): ValidationResult {
-        return ValidationResult(pan.value.isNotEmpty() && pan.value.length == pan.length)
+    fun validateCity(city: City): ValidationResult {
+        return ValidationResult(city.value.isNotEmpty())
+//                && city.value.length >= city.length)
     }
 
-    fun validateOwnerName(name: AccountName): ValidationResult {
-        return ValidationResult(name.value.isNotEmpty() && name.value.length < name.length)
+    fun validatePostOffice(postOffice: PostOffice): ValidationResult {
+        return ValidationResult(postOffice.value.isNotEmpty())
+//                && postOffice.value.length >= postOffice.length)
     }
 }
 
 data class ValidationResult(
-    val status: Boolean = false
+    val status: Boolean = false,
 )

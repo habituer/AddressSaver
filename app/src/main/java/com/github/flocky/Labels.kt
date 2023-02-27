@@ -2,8 +2,15 @@ package com.github.flocky
 
 object Labels
 
-const val PANLabel: String = "PAN"
-const val AccountNumberLabel: String = "Account Number"
-const val AccountNameLabel: String = "Account Name"
-const val ErrorMessageValidation: String = "Please check the input fields"
-const val SuccessMessageValidation: String = "No issues were encountered"
+val defaultPostalCodeLabel: String = "Postal Code"
+val defaultPostOfficeLabel: String = "PostOffice"
+val defaultCityLabel: String = "City"
+val defaultStreetLabel: String = "Street"
+val defaultBuildingNumberLabel: String = "BuildingNumber"
+val defaultLocumNumberLabel: String = "LocumNumber"
+val defaultCommuneLabel: String = "Commune"
+val defaultPoviatLabel: String = "Poviat"
+val defaultVoivodeshipLabel: String = "Voivodeship"
+
+const val ErrorMessageValidation: String = "Validation failed"
+const val SuccessMessageValidation: String = "Validation Success"

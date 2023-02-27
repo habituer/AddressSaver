@@ -25,7 +25,7 @@ fun AddressUIComponent(
     isError: Boolean = false,
     onTextChanged: (String) -> Unit,
     onNext: (KeyboardActionScope) -> Unit,
-    onDone: (KeyboardActionScope) -> Unit
+    onDone: (KeyboardActionScope) -> Unit,
 ) {
     var text by rememberSaveable {
         mutableStateOf("")
@@ -43,17 +43,17 @@ fun AddressUIComponent(
         keyboardOptions = KeyboardOptions(
             keyboardType = componentProps.keyboardType,
             imeAction = imeAction,
-            capitalization = componentProps.keyboardCapitalization
+            capitalization = componentProps.keyboardCapitalization,
         ),
         keyboardActions = KeyboardActions(
             onDone = onDone,
-            onNext = onNext
+            onNext = onNext,
         ),
         textStyle = TextStyle(
             color = Color.Black,
             fontSize = 16.sp,
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
         ),
-        isError = isError
+        isError = isError,
     )
 }

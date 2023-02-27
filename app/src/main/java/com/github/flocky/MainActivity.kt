@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,8 +16,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -35,17 +32,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    color = MaterialTheme.colors.background,
                 ) {
                     App()
                 }
@@ -82,40 +73,36 @@ fun App() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bank Details") },
-                backgroundColor = MaterialTheme.colors.primary
+                title = { Text("Customer Address") },
+                backgroundColor = MaterialTheme.colors.primary,
             )
         },
         scaffoldState = scaffoldState,
         content = {
             UIScreen(scaffoldState)
-        }
+        },
     )
 }
 
 @Composable
 fun UIScreen(scaffoldState: ScaffoldState) {
-    LaunchedEffect(true) {
-        showSnackWrapper(scaffoldState, "Hello!")
-    }
-    val bankFormViewModel = viewModel(modelClass = BankFormViewModel::class.java)
+    val customerAddressViewModel = viewModel(modelClass = CustomerAddressVM::class.java)
 
-    val accountName by remember {
-        mutableStateOf(bankFormViewModel.uiState.value.accountName)
+    val postalCode by remember {
+        mutableStateOf(customerAddressViewModel.uiState.value.postalCode)
     }
 
-    val accountNumber by remember {
-        mutableStateOf(bankFormViewModel.uiState.value.accountNumber)
+    val postOffice by remember {
+        mutableStateOf(customerAddressViewModel.uiState.value.postOffice)
     }
 
-    val panNumber by remember {
-        mutableStateOf(bankFormViewModel.uiState.value.panNumber)
+    val city by remember {
+        mutableStateOf(customerAddressViewModel.uiState.value.city)
     }
 
-    var checkedState by remember { mutableStateOf(false) }
     val localFocus = LocalFocusManager.current
     LaunchedEffect(key1 = scaffoldState) {
-        bankFormViewModel.validationEvent.collect { event ->
+        customerAddressViewModel.validationEvent.collect { event ->
             when (event) {
                 is UIEvent.ValidationEvent.Success -> {
                     showSnackWrapper(scaffoldState, event.msg)
@@ -135,9 +122,8 @@ fun UIScreen(scaffoldState: ScaffoldState) {
             .navigationBarsPadding()
             .imePadding()
             .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        InfoCard()
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
@@ -146,126 +132,71 @@ fun UIScreen(scaffoldState: ScaffoldState) {
                     .statusBarsPadding()
                     .navigationBarsPadding()
                     .imePadding(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 AddressUIComponent(
-                    accountNumber,
+                    postalCode,
                     onTextChanged = {
-                        bankFormViewModel.onEvent(UIEvent.AccountNumberChanged(it))
+                        customerAddressViewModel.onEvent(UIEvent.PostalCodeChanged(it))
                     },
-                    isError = accountNumber.hasAccountNumberValidationError,
+                    isError = postalCode.hasPostalCodeValidationError,
                     onNext = {
                         localFocus.moveFocus(FocusDirection.Down)
                     },
                     onDone = {
-                    }
+                    },
                 )
                 AddressUIComponent(
-                    accountName,
+                    postOffice,
                     onTextChanged = {
-                        bankFormViewModel.onEvent(UIEvent.AccountNameChanged(it))
+                        customerAddressViewModel.onEvent(UIEvent.PostOfficeChanged(it))
                     },
-                    isError = accountName.hasAccountNameValidationError,
+                    isError = postOffice.hasPostOfficeValidationError,
                     onNext = {
                         localFocus.moveFocus(FocusDirection.Down)
                     },
                     onDone = {
-                    }
+                    },
                 )
                 AddressUIComponent(
-                    panNumber,
+                    city,
                     onTextChanged = {
-                        bankFormViewModel.onEvent(UIEvent.PANNumberChanged(it))
+                        customerAddressViewModel.onEvent(UIEvent.CityChanged(it))
                     },
-                    isError = panNumber.hasPanNumberValidationError,
+                    isError = city.hasCityValidationError,
                     onNext = {
                         localFocus.moveFocus(FocusDirection.Down)
                     },
                     onDone = {
-                    }
+                    },
                 )
-            }
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f)
-                    .wrapContentWidth(Alignment.End)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp)
-                ) {
-                    Checkbox(
-                        checked = checkedState,
-                        onCheckedChange = { checkedState = it }
-                    )
-                    Text(text = "I accept these are legitimate values")
-                }
-
                 Button(
-                    enabled = checkedState,
-                    modifier = Modifier
+                    modifier = Modifier.padding(vertical = 10.dp)
                         .fillMaxWidth()
                         .height(45.dp),
                     onClick = {
-                        bankFormViewModel.onEvent(UIEvent.Submit)
-                    }
+                        customerAddressViewModel.onEvent(UIEvent.Submit)
+                    },
                 ) {
                     Text("Submit")
                 }
             }
         }
-//        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 suspend fun showSnackWrapper(scaffoldState: ScaffoldState, msg: String) {
     scaffoldState.snackbarHostState.showSnackbar(
         msg,
-        "Dismiss Me!"
+        "Dismiss Me!",
     )
-}
-
-@Composable
-fun InfoCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { },
-        elevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(15.dp)
-        ) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFF4552B8))
-                    ) {
-                        append("HDFC ")
-                    }
-                }
-            )
-            Text(
-                buildAnnotatedString {
-                    append("One Click ")
-                    withStyle(
-                        style = SpanStyle(fontWeight = FontWeight.W900, color = Color(0xFFC00A48))
-                    ) {
-                        append("Apply Loan")
-                    }
-                }
-            )
-        }
-    }
 }
 
 @Composable
 fun DefaultSnackbar(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    onDismiss: () -> Unit = { }
+    onDismiss: () -> Unit = { },
 ) {
     SnackbarHost(
         hostState = snackbarHostState,
@@ -275,7 +206,7 @@ fun DefaultSnackbar(
                 content = {
                     Text(
                         text = data.message,
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.body2,
                     )
                 },
                 action = {
@@ -284,16 +215,16 @@ fun DefaultSnackbar(
                             Text(
                                 text = actionLabel,
                                 color = MaterialTheme.colors.primary,
-                                style = MaterialTheme.typography.body2
+                                style = MaterialTheme.typography.body2,
                             )
                         }
                     }
-                }
+                },
             )
         },
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight(Alignment.Bottom)
+            .wrapContentHeight(Alignment.Bottom),
     )
 }
 
@@ -305,7 +236,7 @@ fun AppPreview() {
 
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colors.background
+            color = MaterialTheme.colors.background,
         ) {
             App()
         }
