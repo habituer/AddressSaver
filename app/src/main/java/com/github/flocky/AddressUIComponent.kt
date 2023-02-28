@@ -28,7 +28,7 @@ fun AddressUIComponent(
     onDone: (KeyboardActionScope) -> Unit,
 ) {
     var text by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(componentProps.value)
     }
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),

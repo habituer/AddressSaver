@@ -14,7 +14,11 @@ class CustomerAddressVM @Inject constructor() : ViewModel() {
 
     private var _uiState = mutableStateOf(UI())
     val uiState: State<UI> = _uiState
-
+    val initialValue = "678507"
+    init {
+        val postalCode = uiState.value.postalCode.copy(postalCode = initialValue)
+        _uiState.value = uiState.value.copy(postalCode = postalCode)
+    }
     val validationEvent = MutableSharedFlow<UIEvent.ValidationEvent>()
 
     /**
