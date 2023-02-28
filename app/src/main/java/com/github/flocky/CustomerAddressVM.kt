@@ -1,6 +1,5 @@
 package com.github.flocky
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,13 +11,20 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerAddressVM @Inject constructor() : ViewModel() {
 
-    private var _uiState = mutableStateOf(UI())
-    val uiState: State<UI> = _uiState
-    val initialValue = "678507"
+    var uiState = mutableStateOf(UI())
+        private set
+
     init {
+        val initialValue = "678507"
         val postalCode = uiState.value.postalCode.copy(postalCode = initialValue)
-        _uiState.value = uiState.value.copy(postalCode = postalCode)
+        uiState.value = uiState.value.copy(postalCode = postalCode)
     }
+
+    fun initValues(cityString: String) {
+        val city = uiState.value.city.copy(city = cityString)
+        uiState.value = uiState.value.copy(city = city)
+    }
+
     val validationEvent = MutableSharedFlow<UIEvent.ValidationEvent>()
 
     /**
@@ -28,18 +34,18 @@ class CustomerAddressVM @Inject constructor() : ViewModel() {
         when (event) {
             is UIEvent.PostalCodeChanged -> {
                 val postalCode =
-                    _uiState.value.postalCode.copy(postalCode = event.postalCode)
-                _uiState.value = _uiState.value.copy(postalCode = postalCode)
+                    uiState.value.postalCode.copy(postalCode = event.postalCode)
+                uiState.value = uiState.value.copy(postalCode = postalCode)
             }
 
             is UIEvent.PostOfficeChanged -> {
-                val postOffice = _uiState.value.postOffice.copy(postOffice = event.postOffice)
-                _uiState.value = _uiState.value.copy(postOffice = postOffice)
+                val postOffice = uiState.value.postOffice.copy(postOffice = event.postOffice)
+                uiState.value = uiState.value.copy(postOffice = postOffice)
             }
 
             is UIEvent.CityChanged -> {
-                val city = _uiState.value.city.copy(city = event.city)
-                _uiState.value = _uiState.value.copy(city = city)
+                val city = uiState.value.city.copy(city = event.city)
+                uiState.value = uiState.value.copy(city = city)
             }
 
             is UIEvent.Submit -> {
@@ -49,21 +55,21 @@ class CustomerAddressVM @Inject constructor() : ViewModel() {
     }
 
     private fun validateInputs() {
-        val postalCodeResult = Validator.validateAccountNumber(_uiState.value.postalCode)
+        val postalCodeResult = Validator.validateAccountNumber(uiState.value.postalCode)
         val postalCode =
-            _uiState.value.postalCode.copy(hasPostalCodeValidationError = !postalCodeResult.status)
-        _uiState.value = _uiState.value.copy(postalCode = postalCode)
+            uiState.value.postalCode.copy(hasPostalCodeValidationError = !postalCodeResult.status)
+        uiState.value = uiState.value.copy(postalCode = postalCode)
 
-        val postOfficeResult = Validator.validatePostOffice(_uiState.value.postOffice)
+        val postOfficeResult = Validator.validatePostOffice(uiState.value.postOffice)
 
         val postOffice =
-            _uiState.value.postOffice.copy(hasPostOfficeValidationError = !postOfficeResult.status)
-        _uiState.value = _uiState.value.copy(postOffice = postOffice)
+            uiState.value.postOffice.copy(hasPostOfficeValidationError = !postOfficeResult.status)
+        uiState.value = uiState.value.copy(postOffice = postOffice)
 
-        val cityResult = Validator.validateCity(_uiState.value.city)
+        val cityResult = Validator.validateCity(uiState.value.city)
         val city =
-            _uiState.value.city.copy(hasCityValidationError = !cityResult.status)
-        _uiState.value = _uiState.value.copy(city = city)
+            uiState.value.city.copy(hasCityValidationError = !cityResult.status)
+        uiState.value = uiState.value.copy(city = city)
 
         val hasError = listOf(
             postalCodeResult,

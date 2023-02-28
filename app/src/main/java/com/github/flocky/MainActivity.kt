@@ -87,7 +87,7 @@ fun App() {
 @Composable
 fun UIScreen(scaffoldState: ScaffoldState) {
     val customerAddressViewModel = viewModel(modelClass = CustomerAddressVM::class.java)
-
+    customerAddressViewModel.initValues("Jakarta")
     val postalCode by remember {
         mutableStateOf(customerAddressViewModel.uiState.value.postalCode)
     }
