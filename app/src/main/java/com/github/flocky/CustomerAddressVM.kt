@@ -55,7 +55,7 @@ class CustomerAddressVM @Inject constructor() : ViewModel() {
     }
 
     private fun validateInputs() {
-        val postalCodeResult = Validator.validateAccountNumber(uiState.value.postalCode)
+        val postalCodeResult = Validator.validatePostalCode(uiState.value.postalCode)
         val postalCode =
             uiState.value.postalCode.copy(hasPostalCodeValidationError = !postalCodeResult.status)
         uiState.value = uiState.value.copy(postalCode = postalCode)

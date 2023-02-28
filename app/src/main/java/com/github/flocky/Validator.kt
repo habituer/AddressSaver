@@ -2,7 +2,7 @@ package com.github.flocky
 
 object Validator {
 
-    fun validateAccountNumber(postalCode: PostalCode): ValidationResult {
+    fun validatePostalCode(postalCode: PostalCode): ValidationResult {
         return ValidationResult(
             postalCode.value.isNotEmpty() &&
                 postalCode.value.length == postalCode.length,
